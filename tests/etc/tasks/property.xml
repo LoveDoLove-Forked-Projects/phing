@@ -72,4 +72,15 @@
   <target name="testRequired">
     <property file="foo.bar" required="true" />
   </target>
+  <target name="testOverrideShouldNotReplaceCommandLineProperty">
+    <property name="test.property" value="replacement" override="true"/>
+  </target>
+
+  <target name="testUserPropertyWithoutOverrideShouldPreserveExistingValue">
+    <property name="test.property" value="replacement" userProperty="true"/>
+  </target>
+
+  <target name="testUserPropertyWithOverrideShouldReplaceExistingValue">
+    <property name="test.property" value="replacement" userProperty="true" override="true"/>
+  </target>
 </project>

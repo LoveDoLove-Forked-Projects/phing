@@ -180,6 +180,63 @@ class PhingTaskTest extends BuildFileTest
         $this->assertInLogs('The value of test is 7');
     }
 
+    public static function inheritAllProvider(): array
+    {
+        return [
+            'inheritAll=true' => [true],
+            'inheritAll=false' => [false],
+        ];
+    }
+
+    /**
+     * @dataProvider inheritAllProvider
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('inheritAllProvider')]
+    public function testCommandLinePropertyShouldSurviveOverrideInCalledTarget(bool $inheritAll): void
+    {
+        $this->assertPhingCallPropertyValue(__FUNCTION__, $inheritAll, 'command-line');
+    }
+
+    /**
+     * @dataProvider inheritAllProvider
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('inheritAllProvider')]
+    public function testUserPropertyWithOverrideShouldReplaceCommandLinePropertyInCalledTarget(bool $inheritAll): void
+    {
+        $this->assertPhingCallPropertyValue(__FUNCTION__, $inheritAll, 'replacement');
+    }
+
+    /**
+     * @dataProvider inheritAllProvider
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('inheritAllProvider')]
+    public function testNestedPropertyShouldNotReplaceCommandLineProperty(bool $inheritAll): void
+    {
+        $this->assertPhingCallPropertyValue(__FUNCTION__, $inheritAll, 'command-line');
+    }
+
+    /**
+     * @dataProvider inheritAllProvider
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('inheritAllProvider')]
+    public function testNestedPropertyWithOverrideShouldNotReplaceCommandLineProperty(bool $inheritAll): void
+    {
+        $this->assertPhingCallPropertyValue(__FUNCTION__, $inheritAll, 'command-line');
+    }
+
+    private function assertPhingCallPropertyValue(string $target, bool $inheritAll, string $expected): void
+    {
+        // Use the same property registration as command-line -D arguments.
+        $this->project->setUserProperty('test.property', 'command-line');
+        $this->project->setProperty('test.inheritAll', $inheritAll ? 'true' : 'false');
+
+        $this->expectLogContaining($target, 'Called target property: ' . $expected);
+
+        // Changes in the called project must not affect the caller.
+        $this->assertPropertyEquals('test.property', 'command-line');
+        $this->assertSame('command-line', $this->project->getUserProperty('test.property'));
+    }
+
     public function testOverrideWinsInheritAll(): void
     {
         $this->expectLogContaining('test-property-override-inheritall-start', 'The value of test is 4');

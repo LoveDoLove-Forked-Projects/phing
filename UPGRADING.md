@@ -107,6 +107,10 @@ Tasks
 
 Properties
 ----------
+* Properties supplied on the command line (for example, `-Dfoo=bar`) cannot be overridden by
+  `<property override="true" .../>`. This also applies inside targets invoked through `phingcall`:
+  command-line properties retain their original values in the called target, even when
+  `override="true"` is used. Use a separate property name if the called target needs a different value.
 * The way Phing handles and parses boolean values has changed significantly! In general, strings such as `true`, `false`, `TRUE`, `FALSE`, etc.
   are no longer parsed into their PHP native equivalent. Specifically:
   * The way how boolean values are handled inside tasks has been normalized. Therefore `t` is not a valid `true` value any longer.

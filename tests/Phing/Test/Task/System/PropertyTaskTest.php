@@ -66,6 +66,39 @@ class PropertyTaskTest extends BuildFileTest
         $this->assertPropertyEquals('http.port', '80');
     }
 
+    public function testOverrideShouldNotReplaceCommandLineProperty(): void
+    {
+        // Command-line -D properties are registered as user properties.
+        $this->project->setUserProperty('test.property', 'command-line');
+
+        $this->executeTarget(__FUNCTION__);
+
+        $this->assertPropertyEquals('test.property', 'command-line');
+        $this->assertSame('command-line', $this->project->getUserProperty('test.property'));
+    }
+
+    public function testUserPropertyWithoutOverrideShouldPreserveExistingValue(): void
+    {
+        // Command-line -D properties are registered as user properties.
+        $this->project->setUserProperty('test.property', 'command-line');
+
+        $this->executeTarget(__FUNCTION__);
+
+        $this->assertPropertyEquals('test.property', 'command-line');
+        $this->assertSame('command-line', $this->project->getUserProperty('test.property'));
+    }
+
+    public function testUserPropertyWithOverrideShouldReplaceExistingValue(): void
+    {
+        // Command-line -D properties are registered as user properties.
+        $this->project->setUserProperty('test.property', 'command-line');
+
+        $this->executeTarget(__FUNCTION__);
+
+        $this->assertPropertyEquals('test.property', 'replacement');
+        $this->assertSame('replacement', $this->project->getUserProperty('test.property'));
+    }
+
     public function testPrefixSuccess(): void
     {
         $this->executeTarget('prefix.success');

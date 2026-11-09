@@ -190,4 +190,34 @@
     <target name="da"><echo>da</echo></target>
     <target name="db"><echo>db</echo></target>
     <target name="dc"><echo>dc</echo></target>
+    <target name="testCommandLinePropertyShouldSurviveOverrideInCalledTarget">
+        <phingcall target="test-phingcall-property-override-child" inheritAll="${test.inheritAll}"/>
+    </target>
+
+    <target name="test-phingcall-property-override-child">
+        <property name="test.property" value="replacement" override="true"/>
+        <echo message="Called target property: ${test.property}"/>
+    </target>
+
+    <target name="testUserPropertyWithOverrideShouldReplaceCommandLinePropertyInCalledTarget">
+        <phingcall target="test-phingcall-user-property-override-child" inheritAll="${test.inheritAll}"/>
+    </target>
+
+    <target name="test-phingcall-user-property-override-child">
+        <property name="test.property" value="replacement" userProperty="true" override="true"/>
+        <echo message="Called target property: ${test.property}"/>
+    </target>
+
+    <target name="testNestedPropertyShouldNotReplaceCommandLineProperty">
+        <phingcall target="test-phingcall-property-override-child" inheritAll="${test.inheritAll}">
+            <property name="test.property" value="nested"/>
+        </phingcall>
+    </target>
+
+    <target name="testNestedPropertyWithOverrideShouldNotReplaceCommandLineProperty">
+        <phingcall target="test-phingcall-property-override-child" inheritAll="${test.inheritAll}">
+            <property name="test.property" value="nested" override="true"/>
+        </phingcall>
+    </target>
+
 </project>
